@@ -18,6 +18,7 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Output](#output)
 - [Build Targets](#build-targets)
 - [Configuration](#configuration)
 - [Architecture](#architecture)
@@ -82,6 +83,22 @@ int main() {
     matrix.print();
 }
 ```
+
+---
+
+## Output
+
+Running the program writes a `.pbm` file to `output/qrcode.pbm` — a plain-text image format that needs no compression, so it can be written without any external library. To view it or scan it with a phone, convert it to PNG:
+
+```bash
+# Linux / macOS
+convert output/qrcode.pbm output/qrcode.png
+
+# Windows (ImageMagick 7+)
+magick output/qrcode.pbm output/qrcode.png
+```
+
+**Important:** don't pass `-resize`/`-scale` with a target size. The program already renders each module as a solid `10x10` pixel block (`MODULE_SCALE` in `output.cpp`), so the `.pbm` is already full-size. Resizing to a size that isn't an exact multiple of the original introduces blur at the module edges, which breaks scanning.
 
 ---
 

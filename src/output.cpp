@@ -38,15 +38,19 @@ void writePBM(const Matrix& matrix, const std::string& filename) {
         std::filesystem::create_directories(filePath.parent_path());
     }
 
-    int total = matrix.size() + 2 * QUIET_ZONE;
+    const int MODULE_SCALE = 10;  // each module becomes a 10x10 pixel block
+    int totalModules = matrix.size() + 2 * QUIET_ZONE;
+    int totalPixels = totalModules * MODULE_SCALE;
+
     std::ofstream file(filename);
-
     file << "P1\n";
-    file << total << " " << total << "\n";
+    file << totalPixels << " " << totalPixels << "\n";
 
-    for (int r = 0; r < total; ++r) {
-        for (int c = 0; c < total; ++c) {
-            file << (isDark(matrix, r, c) ? "1" : "0") << " ";
+    for (int r = 0; r < totalPixels; ++r) {
+        for (int c = 0; c < totalPixels; ++c) {
+            int moduleRow = r / MODULE_SCALE;
+            int moduleCol = c / MODULE_SCALE;
+            file << (isDark(matrix, moduleRow, moduleCol) ? "1" : "0") << " ";
         }
         file << "\n";
     }

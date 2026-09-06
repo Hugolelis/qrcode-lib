@@ -1,10 +1,11 @@
 #include "matrix.h"
 #include <iostream>
 
-Matrix::Matrix(int size)
-    : size_(size),
-      grid_(size, std::vector<Module>(size, Module::UNSET)),
-      isDataModule_(size, std::vector<bool>(size, false)) {}
+Matrix::Matrix(int version)
+    : version_(version),
+      size_(4 * version + 17),
+      grid_(size_, std::vector<Module>(size_, Module::UNSET)),
+      isDataModule_(size_, std::vector<bool>(size_, false)) {}
 
 void Matrix::set(int row, int col, Module value) 
 {
@@ -61,35 +62,48 @@ void Matrix::drawTimingPatterns()
 
 void Matrix::drawDarkModule() 
 {
-    // Formula: (4 * version + 9, 8). Version 1 -> (13, 8)
-    set(13, 8, Module::DARK);
+    // Formula: (4 * version + 9, 8)
+    set(4 * version_ + 9, 8, Module::DARK);
 }
 
-void Matrix::drawFunctionPatterns() 
+void Matrix::drawAlignmentPatterns() 
 {
+    if (version_ == 1) return;  // Version 1 has no alignment patterns
+
+    int center = size_ - 7;  // valid for versions 2-6 (single alignment pattern)
+    for (int i = -2; i <= 2; ++i) {
+        for (int j = -2; j <= 2; ++j) 
+        {
+            bool isOuterRing = (i == -2 || i == 2 || j == -2 || j == 2);
+            bool isCenter = (i == 0 && j == 0);
+            Module m = (isOuterRing || isCenter) ? Module::DARK : Module::LIGHT;
+            set(center + i, center + j, m);
+        }
+    }
+}
+
+void Matrix::drawFunctionPatterns() {
     drawFinderPattern(0, 0);
     drawFinderPattern(0, size_ - 7);
     drawFinderPattern(size_ - 7, 0);
     drawSeparators();
     drawTimingPatterns();
     drawDarkModule();
+    drawAlignmentPatterns();
 }
 
 void Matrix::reserveFormatInfoArea() 
 {
-    // Copy A, around the top-left finder
     for (int i : {0, 1, 2, 3, 4, 5, 7, 8}) 
     {
         set(i, 8, Module::RESERVED);
         set(8, i, Module::RESERVED);
     }
-
-    // Copy B, split between the top-right and bottom-left finders
-    for (int i = 14; i <= 20; ++i) 
+    for (int i = size_ - 7; i <= size_ - 1; ++i) 
     {
         set(i, 8, Module::RESERVED);
     }
-    for (int i = 13; i <= 20; ++i) 
+    for (int i = size_ - 8; i <= size_ - 1; ++i) 
     {
         set(8, i, Module::RESERVED);
     }
@@ -151,31 +165,30 @@ void Matrix::applyMask0()
     }
 }
 
-void Matrix::placeFormatBits(uint16_t formatBits) {
-    auto moduleFor = [](uint16_t bits, int bitIndex) {
-        bool bit = (bits >> bitIndex) & 1;
-        return bit ? Module::DARK : Module::LIGHT;
+void Matrix::placeFormatBits(uint16_t formatBits) 
+{
+    auto bitAt = [formatBits](int i) 
+    {
+        return (formatBits >> i) & 1;
     };
 
-    // Copy A: column 8 (rows 0-5, 7, 8) holds bits 14 down to 7
-    int copyARows[] = {0, 1, 2, 3, 4, 5, 7, 8};
-    for (int i = 0; i < 8; ++i) {
-        set(copyARows[i], 8, moduleFor(formatBits, 14 - i));
+    // column 8: bit i goes to a row that depends on i (spec-defined ranges)
+    for (int i = 0; i < 15; ++i) 
+    {
+        int row;
+        if (i < 6) row = i;
+        else if (i < 8) row = i + 1;
+        else row = size_ - 15 + i;
+        set(row, 8, bitAt(i) ? Module::DARK : Module::LIGHT);
     }
 
-    // Copy A continued: row 8 (columns 7,5,4,3,2,1,0) holds bits 6 down to 0
-    int copyACols[] = {7, 5, 4, 3, 2, 1, 0};
-    for (int i = 0; i < 7; ++i) {
-        set(8, copyACols[i], moduleFor(formatBits, 6 - i));
-    }
-
-    // Copy B: row 8 (columns 20 down to 13) holds bits 14 down to 7
-    for (int i = 0; i < 8; ++i) {
-        set(8, size_ - 1 - i, moduleFor(formatBits, 14 - i));
-    }
-
-    // Copy B continued: column 8 (rows 20 down to 14) holds bits 6 down to 0
-    for (int i = 0; i < 7; ++i) {
-        set(size_ - 1 - i, 8, moduleFor(formatBits, 6 - i));
+    // row 8: bit i goes to a column that depends on i (spec-defined ranges)
+    for (int i = 0; i < 15; ++i) 
+    {
+        int col;
+        if (i < 8) col = size_ - 1 - i;
+        else if (i == 8) col = 7;
+        else col = 14 - i;
+        set(8, col, bitAt(i) ? Module::DARK : Module::LIGHT);
     }
 }

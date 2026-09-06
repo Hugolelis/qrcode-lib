@@ -19,6 +19,7 @@ class Matrix
         void drawSeparators();
         void drawTimingPatterns();
         void drawDarkModule();
+        void drawAlignmentPatterns();
 
         void reserveFormatInfoArea();
 
@@ -35,6 +36,7 @@ class Matrix
         void print() const;
 
     private:
+    int version_;
         int size_;
         std::vector<std::vector<Module>> grid_;
         std::vector<std::vector<bool>> isDataModule_;  // true only for modules written by placeData

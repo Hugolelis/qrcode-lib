@@ -6,14 +6,14 @@
 #include "output.h"
 
 int main() {
-    Matrix matrix(21);
+    Matrix matrix(3);  // Version 3
     matrix.drawFunctionPatterns();
     matrix.reserveFormatInfoArea();
 
     GaloisField gf;
-    BitBuffer buffer = encodeByteMode("HELLO");
+    BitBuffer buffer = encodeByteMode("https://hugolelis-dev.vercel.app/", 55 * 8);  // V3-L capacity
     std::vector<uint8_t> data = buffer.toBytes();
-    std::vector<uint8_t> ecCodewords = generateECCodewords(data, 7, gf);
+    std::vector<uint8_t> ecCodewords = generateECCodewords(data, 15, gf);  // V3-L: 15 EC codewords
 
     std::vector<uint8_t> allCodewords = data;
     allCodewords.insert(allCodewords.end(), ecCodewords.begin(), ecCodewords.end());
@@ -21,7 +21,7 @@ int main() {
     matrix.placeData(allCodewords);
     matrix.applyMask0();
 
-    uint16_t formatBits = computeFormatBits(0b01, 0);  // EC level L, mask 0
+    uint16_t formatBits = computeFormatBits(0b01, 0);
     matrix.placeFormatBits(formatBits);
 
     printToTerminal(matrix);

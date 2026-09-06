@@ -24,7 +24,7 @@ namespace {
     }
 }
 
-BitBuffer encodeByteMode(const std::string& text) {
+BitBuffer encodeByteMode(const std::string& text, int capacityBits) {
     BitBuffer buffer;
 
     buffer.appendBits(0b0100, 4);
@@ -34,7 +34,7 @@ BitBuffer encodeByteMode(const std::string& text) {
         buffer.appendBits(static_cast<uint8_t>(c), 8);
     }
 
-    addTerminatorAndPadding(buffer, V1_L_CAPACITY_BITS);
+    addTerminatorAndPadding(buffer, capacityBits);
 
     return buffer;
 }
