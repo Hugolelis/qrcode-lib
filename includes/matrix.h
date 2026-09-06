@@ -2,12 +2,11 @@
 #include <vector>
 #include <cstdint>
 
-
-enum class Module :  uint8_t 
-{
+enum class Module : uint8_t {
     UNSET = 0,
     LIGHT = 1,
-    DARK = 2
+    DARK  = 2,
+    RESERVED = 3   // position is fixed, but the value is written later (Etapa 6)
 };
 
 class Matrix
@@ -16,11 +15,14 @@ class Matrix
         explicit Matrix(int size);
 
         void drawFunctionPatterns();
-        
         void drawFinderPattern(int topRow, int topCol);
         void drawSeparators();
         void drawTimingPatterns();
         void drawDarkModule();
+
+        void reserveFormatInfoArea();
+
+        void placeData(const std::vector<uint8_t>& codewords);
 
         void set(int row, int col, Module value);
         Module get(int row, int col) const;

@@ -82,3 +82,61 @@ void Matrix::drawFunctionPatterns()
     drawTimingPatterns();
     drawDarkModule();
 }
+
+void Matrix::reserveFormatInfoArea() 
+{
+    // Copy A, around the top-left finder
+    for (int i : {0, 1, 2, 3, 4, 5, 7, 8}) 
+    {
+        set(i, 8, Module::RESERVED);
+        set(8, i, Module::RESERVED);
+    }
+
+    // Copy B, split between the top-right and bottom-left finders
+    for (int i = 14; i <= 20; ++i) 
+    {
+        set(i, 8, Module::RESERVED);
+    }
+    for (int i = 13; i <= 20; ++i) 
+    {
+        set(8, i, Module::RESERVED);
+    }
+}
+
+void Matrix::placeData(const std::vector<uint8_t>& codewords) 
+{
+    size_t bitIndex = 0;
+    size_t totalBits = codewords.size() * 8;
+
+    int col = size_ - 1;
+    int direction = -1;  // -1 = moving upward, +1 = moving downward
+
+    while (col > 0) 
+    {
+        if (col == 6) col--;  // skip the vertical timing pattern column entirely
+
+        for (int i = 0; i < size_; ++i) 
+        {
+            int row = (direction == -1) ? (size_ - 1 - i) : i;
+
+            for (int c = col; c >= col - 1; --c) 
+            {
+                if (get(row, c) == Module::UNSET) 
+                {
+                    bool bit = false;
+                    if (bitIndex < totalBits) 
+                    {
+                        uint8_t byte = codewords[bitIndex / 8];
+                        int bitInByte = 7 - (bitIndex % 8);
+                        bit = (byte >> bitInByte) & 1;
+                        ++bitIndex;
+                    }
+                    set(row, c, bit ? Module::DARK : Module::LIGHT);
+                }
+            }
+        }
+
+        direction = -direction;
+        col -= 2;
+    }
+}
