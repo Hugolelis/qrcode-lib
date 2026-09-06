@@ -17,6 +17,7 @@ int main() {
     allCodewords.insert(allCodewords.end(), ecCodewords.begin(), ecCodewords.end());
 
     matrix.placeData(allCodewords);
+    matrix.applyMask0();
     matrix.print();
 
     return 0;

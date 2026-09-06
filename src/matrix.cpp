@@ -2,7 +2,9 @@
 #include <iostream>
 
 Matrix::Matrix(int size)
-    : size_(size), grid_(size, std::vector<Module>(size, Module::UNSET)) {}
+    : size_(size),
+      grid_(size, std::vector<Module>(size, Module::UNSET)),
+      isDataModule_(size, std::vector<bool>(size, false)) {}
 
 void Matrix::set(int row, int col, Module value) 
 {
@@ -132,11 +134,29 @@ void Matrix::placeData(const std::vector<uint8_t>& codewords)
                         ++bitIndex;
                     }
                     set(row, c, bit ? Module::DARK : Module::LIGHT);
+                    isDataModule_[row][c] = true;
                 }
             }
         }
 
         direction = -direction;
         col -= 2;
+    }
+}
+
+void Matrix::applyMask0() 
+{
+    for (int r = 0; r < size_; ++r) 
+    {
+        for (int c = 0; c < size_; ++c) 
+        {
+            bool shouldFlip = isDataModule_[r][c] && (r + c) % 2 == 0;
+            if (shouldFlip) 
+            {
+                Module current = get(r, c);
+                Module flipped = (current == Module::DARK) ? Module::LIGHT : Module::DARK;
+                set(r, c, flipped);
+            }
+        }
     }
 }

@@ -24,6 +24,8 @@ class Matrix
 
         void placeData(const std::vector<uint8_t>& codewords);
 
+        void applyMask0();
+
         void set(int row, int col, Module value);
         Module get(int row, int col) const;
         
@@ -33,4 +35,5 @@ class Matrix
     private:
         int size_;
         std::vector<std::vector<Module>> grid_;
+        std::vector<std::vector<bool>> isDataModule_;  // true only for modules written by placeData
 };
