@@ -3,6 +3,7 @@
 #include "galoisfield.h"
 #include "reedsolomon.h"
 #include "formatinfo.h"
+#include "output.h"
 
 int main() {
     Matrix matrix(21);
@@ -23,7 +24,8 @@ int main() {
     uint16_t formatBits = computeFormatBits(0b01, 0);  // EC level L, mask 0
     matrix.placeFormatBits(formatBits);
 
-    matrix.print();
+    printToTerminal(matrix);
+    writePBM(matrix, "output/qrcode.pbm");
 
     return 0;
 }

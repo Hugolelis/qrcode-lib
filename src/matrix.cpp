@@ -21,16 +21,6 @@ int Matrix::size() const
     return size_;
 }
 
-void Matrix::print() const 
-{
-    for (int r = 0; r < size_; ++r) {
-        for (int c = 0; c < size_; ++c) {
-            std::cout << (get(r, c) == Module::DARK ? "██" : "  ");
-        }
-        std::cout << '\n';
-    }
-}
-
 void Matrix::drawFinderPattern(int topRow, int topCol) 
 {
     for (int i = 0; i < 7; ++i) {
