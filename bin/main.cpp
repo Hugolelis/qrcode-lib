@@ -2,6 +2,7 @@
 #include "encoder.h"
 #include "galoisfield.h"
 #include "reedsolomon.h"
+#include "formatinfo.h"
 
 int main() {
     Matrix matrix(21);
@@ -18,6 +19,10 @@ int main() {
 
     matrix.placeData(allCodewords);
     matrix.applyMask0();
+
+    uint16_t formatBits = computeFormatBits(0b01, 0);  // EC level L, mask 0
+    matrix.placeFormatBits(formatBits);
+
     matrix.print();
 
     return 0;

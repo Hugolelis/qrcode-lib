@@ -26,6 +26,8 @@ class Matrix
 
         void applyMask0();
 
+        void placeFormatBits(uint16_t formatBits);
+
         void set(int row, int col, Module value);
         Module get(int row, int col) const;
         

@@ -160,3 +160,32 @@ void Matrix::applyMask0()
         }
     }
 }
+
+void Matrix::placeFormatBits(uint16_t formatBits) {
+    auto moduleFor = [](uint16_t bits, int bitIndex) {
+        bool bit = (bits >> bitIndex) & 1;
+        return bit ? Module::DARK : Module::LIGHT;
+    };
+
+    // Copy A: column 8 (rows 0-5, 7, 8) holds bits 14 down to 7
+    int copyARows[] = {0, 1, 2, 3, 4, 5, 7, 8};
+    for (int i = 0; i < 8; ++i) {
+        set(copyARows[i], 8, moduleFor(formatBits, 14 - i));
+    }
+
+    // Copy A continued: row 8 (columns 7,5,4,3,2,1,0) holds bits 6 down to 0
+    int copyACols[] = {7, 5, 4, 3, 2, 1, 0};
+    for (int i = 0; i < 7; ++i) {
+        set(8, copyACols[i], moduleFor(formatBits, 6 - i));
+    }
+
+    // Copy B: row 8 (columns 20 down to 13) holds bits 14 down to 7
+    for (int i = 0; i < 8; ++i) {
+        set(8, size_ - 1 - i, moduleFor(formatBits, 14 - i));
+    }
+
+    // Copy B continued: column 8 (rows 20 down to 14) holds bits 6 down to 0
+    for (int i = 0; i < 7; ++i) {
+        set(size_ - 1 - i, 8, moduleFor(formatBits, 6 - i));
+    }
+}
