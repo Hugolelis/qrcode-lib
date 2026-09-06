@@ -2,15 +2,15 @@ CXX := g++
 CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -g -Iincludes
 
 TARGET := build/qrcode
+TEST_TARGET := build/tests
 
-# library sources: the QR logic itself (no main here)
 LIB_SOURCES := $(wildcard src/*.cpp)
-# app sources: just the entry point
 APP_SOURCES := bin/main.cpp
+TEST_SOURCES := $(LIB_SOURCES) tests/test_runner.cpp
 
 SOURCE := $(LIB_SOURCES) $(APP_SOURCES)
 
-.PHONY: all run clean
+.PHONY: all run clean test
 
 all: $(TARGET)
 
@@ -20,6 +20,13 @@ $(TARGET): $(SOURCE)
 
 run: $(TARGET)
 	./$(TARGET)
+
+test: $(TEST_TARGET)
+	./$(TEST_TARGET)
+
+$(TEST_TARGET): $(TEST_SOURCES)
+	mkdir -p build
+	$(CXX) $(CXXFLAGS) $(TEST_SOURCES) -o $(TEST_TARGET)
 
 clean:
 	rm -rf build
