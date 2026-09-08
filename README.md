@@ -5,7 +5,6 @@
 [![License](https://img.shields.io/badge/License-MIT-1a1a2e?style=for-the-badge&logoColor=white)](LICENSE)
 [![C++](https://img.shields.io/badge/C%2B%2B-17-1a1a2e?style=for-the-badge&logo=cplusplus&logoColor=white)]()
 [![Build](https://img.shields.io/badge/Build-Make-1a1a2e?style=for-the-badge&logo=gnu&logoColor=white)]()
-[![Status](https://img.shields.io/badge/Status-In%20Development-1a1a2e?style=for-the-badge&logoColor=white)]()
 
 </div>
 
