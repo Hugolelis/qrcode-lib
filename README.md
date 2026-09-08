@@ -22,7 +22,6 @@
 - [Build Targets](#build-targets)
 - [Configuration](#configuration)
 - [Architecture](#architecture)
-- [Contributing](#contributing)
 - [License](#license)
 
 ---
@@ -152,18 +151,6 @@ The generation pipeline is split into independent stages:
 3. **Error Correction** *(planned)* — Reed-Solomon codewords appended to the encoded data
 4. **Data Placement & Masking** *(planned)* — interleaving data/EC codewords into the matrix and applying the best mask pattern
 5. **Format & Version Information** *(planned)* — encoding metadata modules that make the code scannable
-
----
-
-## Contributing
-
-This is a personal learning project built to understand the QR Code specification (ISO/IEC 18004) from scratch. Suggestions and issues are welcome:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes (`git commit -am 'Add my feature'`)
-4. Push to the branch (`git push origin feature/my-feature`)
-5. Open a Pull Request
 
 ---
 
