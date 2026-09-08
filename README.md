@@ -10,18 +10,30 @@
 
 > **QrCode** is a QR Code generator built from scratch in C++, with no external QR or image libraries. It implements the encoding, matrix construction, and rendering pipeline described in ISO/IEC 18004, as a hands-on way to understand how QR codes actually work under the hood.
 
----
+<details>
+<summary><strong>Table of Contents</strong></summary>
 
-## Table of Contents
-
+- [About](#about)
 - [Features](#features)
-- [Installation](#installation)
+- [Tech Stack](#tech-stack)
+- [Architecture & Design Decisions](#architecture--design-decisions)
+- [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Output](#output)
 - [Build Targets](#build-targets)
 - [Configuration](#configuration)
-- [Architecture](#architecture)
 - [License](#license)
+- [Author](#author)
+
+</details>
+
+---
+
+## About
+
+Most QR code generators are a call to a library that hides the actual algorithm. This one implements ISO/IEC 18004 directly — bit encoding, module matrix, function patterns — with zero external QR or image dependencies, as a way to actually learn the spec instead of trusting a black box.
+
+<!-- Adjust to your actual motivation — draft based on the tagline. -->
 
 ---
 
@@ -30,28 +42,89 @@
 | Capability | Description |
 |---|---|
 | **Data Encoding** | Encode input text using Byte mode |
-| **Error Correction** | Reed-Solomon error correction across levels L, M, Q, H |
 | **Matrix Patterns** | Finder, separator, timing, alignment and dark module patterns |
-| **Masking** | All 8 data mask patterns, selected by penalty scoring |
-| **Format & Version Info** | Format and version information encoding |
-| **Multiple Versions** | Support for QR versions 1 through 40 |
 | **Terminal Rendering** | Render the generated matrix directly in the terminal |
 | **Zero Dependencies** | Pure C++17, no external QR or image libraries |
+| **Error Correction** | Reed-Solomon error correction across levels L, M, Q, H — *planned, not yet implemented* |
+| **Masking** | All 8 data mask patterns, selected by penalty scoring — *planned, not yet implemented* |
+| **Format & Version Info** | Format and version information encoding — *planned, not yet implemented* |
+| **Multiple Versions** | Support for QR versions 1 through 40 — *planned; only version 1 is wired up today* |
+
+<!--
+  Heads up: your Architecture section below marks Error Correction, Masking, and
+  Format & Version Info as "(planned)" — but the Features table listed them as
+  if already shipped. Without those three stages a generated code isn't
+  actually spec-compliant or reliably scannable yet, so I annotated them here
+  to match reality. If you'd rather track this as a full Roadmap section
+  instead of inline notes, say the word — I know you generally don't want
+  Roadmap sections, but this repo has real unfinished pipeline stages, which
+  is a different situation than the others.
+-->
 
 ---
 
-## Installation
+## Tech Stack
 
-```bash
-# Clone the repository
-git clone https://github.com/Hugolelis/QrCode.git
-cd QrCode
+- **Language:** C++17
+- **Build system:** GNU Make
+- **Dependencies:** none (standard library only)
 
-# Build
-make
+---
+
+## Architecture & Design Decisions
+
+```
+includes/               # Public headers
+├── bitbuffer.h
+├── encoder.h
+└── matrix.h
+
+src/                    # Core QR generation logic (library sources)
+├── bitbuffer.cpp       # Bit-level buffer used to assemble encoded data
+├── encoder.cpp         # Byte-mode data encoding
+└── matrix.cpp          # Module grid and function pattern rendering
+
+bin/
+└── main.cpp            # Program entry point
+
+tests/                  # Unit tests (planned)
+
+makefile                # Build configuration
 ```
 
-**Requirements:** a C++17 compiler (e.g. `g++`) and GNU Make.
+The generation pipeline is split into independent stages:
+
+1. **Encoder** — converts input text into a bitstream (`BitBuffer`), following the QR mode/character-count/data format
+2. **Matrix** — builds the module grid and places the function patterns (finder, separator, timing, dark module)
+3. **Error Correction** *(planned)* — Reed-Solomon codewords appended to the encoded data
+4. **Data Placement & Masking** *(planned)* — interleaving data/EC codewords into the matrix and applying the best mask pattern
+5. **Format & Version Information** *(planned)* — encoding metadata modules that make the code scannable
+
+**Why this shape:** headers under `includes/` and implementation under `src/` keep the library reusable on its own — `bin/main.cpp` only wires the pieces together, so the encoding/matrix logic can be `#include`d by another program without pulling in a CLI. Each pipeline stage (encoder, matrix, error correction, masking) is its own translation unit so a stage can be tested and reasoned about independently of the others.
+
+**Known limitations:**
+- Without error correction, masking, and format/version info, generated codes aren't spec-compliant yet and may not scan reliably on a real device.
+- Only version 1 (21×21) is exercised today — larger versions need the alignment-pattern placement logic that scales with version.
+- No test suite yet (`tests/` is a placeholder).
+
+<!-- Adjust "Why this shape" and "Known limitations" to match your actual reasoning — draft based on the code structure. -->
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- A C++17 compiler (e.g. `g++`)
+- GNU Make
+
+### Installation
+
+```bash
+git clone https://github.com/Hugolelis/QrCode.git
+cd QrCode
+make
+```
 
 ---
 
@@ -122,37 +195,12 @@ Build behavior is controlled through `makefile` variables:
 
 ---
 
-## Architecture
-
-```
-includes/               # Public headers
-├── bitbuffer.h
-├── encoder.h
-└── matrix.h
-
-src/                    # Core QR generation logic (library sources)
-├── bitbuffer.cpp       # Bit-level buffer used to assemble encoded data
-├── encoder.cpp         # Byte-mode data encoding
-└── matrix.cpp          # Module grid and function pattern rendering
-
-bin/
-└── main.cpp            # Program entry point
-
-tests/                  # Unit tests (planned)
-
-makefile                # Build configuration
-```
-
-The generation pipeline is split into independent stages:
-
-1. **Encoder** — converts input text into a bitstream (`BitBuffer`), following the QR mode/character-count/data format
-2. **Matrix** — builds the module grid and places the function patterns (finder, separator, timing, dark module)
-3. **Error Correction** *(planned)* — Reed-Solomon codewords appended to the encoded data
-4. **Data Placement & Masking** *(planned)* — interleaving data/EC codewords into the matrix and applying the best mask pattern
-5. **Format & Version Information** *(planned)* — encoding metadata modules that make the code scannable
-
----
-
 ## License
 
 Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
+
+---
+
+## Author
+
+**Hugo** — [GitHub](https://github.com/Hugolelis)
