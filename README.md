@@ -96,9 +96,9 @@ The generation pipeline is split into independent stages:
 
 1. **Encoder** — converts input text into a bitstream (`BitBuffer`), following the QR mode/character-count/data format
 2. **Matrix** — builds the module grid and places the function patterns (finder, separator, timing, dark module)
-3. **Error Correction** *(planned)* — Reed-Solomon codewords appended to the encoded data
-4. **Data Placement & Masking** *(planned)* — interleaving data/EC codewords into the matrix and applying the best mask pattern
-5. **Format & Version Information** *(planned)* — encoding metadata modules that make the code scannable
+3. **Error Correction** — Reed-Solomon codewords appended to the encoded data
+4. **Data Placement & Masking** — interleaving data/EC codewords into the matrix and applying the best mask pattern
+5. **Format & Version Information** — encoding metadata modules that make the code scannable
 
 **Why this shape:** headers under `includes/` and implementation under `src/` keep the library reusable on its own — `bin/main.cpp` only wires the pieces together, so the encoding/matrix logic can be `#include`d by another program without pulling in a CLI. Each pipeline stage (encoder, matrix, error correction, masking) is its own translation unit so a stage can be tested and reasoned about independently of the others.
 
