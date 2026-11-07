@@ -22,8 +22,8 @@
 - [Output](#output)
 - [Build Targets](#build-targets)
 - [Configuration](#configuration)
-- [License](#license)
 - [Author](#author)
+- [License](#license)
 
 </details>
 
@@ -195,12 +195,12 @@ Build behavior is controlled through `makefile` variables:
 
 ---
 
-## License
-
-Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
-
----
-
 ## Author
 
 [Hugolelis](https://github.com/Hugolelis)
+
+---
+
+## License
+
+Distributed under the **MIT License**. See [LICENSE](LICENSE) for more information.
