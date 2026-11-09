@@ -2,7 +2,7 @@
 
 <div align="left">
 
-[![Status](https://img.shields.io/badge/Status-Completed-407a50?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
+[![Status](https://img.shields.io/badge/Status-Active-407a50?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
 [![Version](https://img.shields.io/badge/Version-0.1.0-0f766e?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-0f766e?style=for-the-badge&labelColor=1a1a1a&logoColor=white)](LICENSE)
 
