@@ -2,7 +2,7 @@
 
 <div align="left">
 
-[![Status](https://img.shields.io/badge/Status-In_Development-a16207?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
+[![Status](https://img.shields.io/badge/Status-Completed-407a50?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
 [![Version](https://img.shields.io/badge/Version-0.1.0-0f766e?style=for-the-badge&labelColor=1a1a1a&logoColor=white)]()
 [![License](https://img.shields.io/badge/License-MIT-0f766e?style=for-the-badge&labelColor=1a1a1a&logoColor=white)](LICENSE)
 
@@ -35,7 +35,7 @@
 
 Most QR code generators are a call to a library that hides the actual algorithm. This one implements ISO/IEC 18004 directly (bit encoding, Galois-field arithmetic for Reed-Solomon, module matrix, function patterns, data placement, format information) with zero external QR or image dependencies, as a way to actually learn the spec instead of trusting a black box.
 
-The generated codes are real, scannable QR codes: the output of `make run` decodes back to the original text with a standard decoder. What is still missing is generality (more versions, error-correction levels and mask selection), listed under [Known limitations](#architecture--design-decisions).
+The generated codes are real, scannable QR codes: the output of `make run` decodes back to the original text with a standard decoder. The scope limits (a single version and error-correction level per run, one mask pattern) are listed under [Known limitations](#architecture--design-decisions).
 
 ---
 
@@ -138,15 +138,15 @@ The generation pipeline is split into independent stages, each in its own transl
 5. **Masking**: flips data modules according to the mask pattern (function patterns are never touched)
 6. **Format information**: computes the BCH-protected format bits for the EC level and mask, and writes them into the reserved area
 
-**Why this shape:** headers under `includes/` and implementation under `src/` keep the library reusable on its own: `bin/main.cpp` only wires the pieces together, so the encoding and matrix logic can be `#include`d by another program without pulling in a CLI. Each stage is its own translation unit, so it can be tested and reasoned about independently (the test runner compiles `src/` plus `tests/test_runner.cpp`, without `main.cpp`). The capacity (data codewords) and the number of EC codewords are passed in by the caller instead of being looked up from a version table, which keeps the stages simple while the spec tables are not implemented yet.
+**Why this shape:** headers under `includes/` and implementation under `src/` keep the library reusable on its own: `bin/main.cpp` only wires the pieces together, so the encoding and matrix logic can be `#include`d by another program without pulling in a CLI. Each stage is its own translation unit, so it can be tested and reasoned about independently (the test runner compiles `src/` plus `tests/test_runner.cpp`, without `main.cpp`). The capacity (data codewords) and the number of EC codewords are passed in by the caller instead of being looked up from a version table, which keeps the stages simple and leaves the spec tables out of scope.
 
 **Known limitations:**
-- Only error-correction level L has been exercised, with the capacity and EC codeword count supplied by the caller (there is no version/level capacity table yet). Format bits for other levels can be computed, but nothing validates the matching capacity.
+- Only error-correction level L has been exercised, with the capacity and EC codeword count supplied by the caller (there is no version/level capacity table). Format bits for other levels can be computed, but nothing validates the matching capacity.
 - Only single-block layouts work. Versions 1 to 5 at level L were checked and decode correctly; from version 6 the data is split into several Reed-Solomon blocks that must be interleaved, which is not implemented.
 - Only mask pattern 0 is applied. The other 7 patterns and the penalty-score selection are not implemented, so codes may be harder to scan than necessary on some inputs.
 - Alignment patterns are drawn for versions 2 to 6 only (a single pattern), and version information (versions 7+) is not implemented.
 - Byte mode only, and the character count is a single byte, so the input is limited to 255 characters.
-- The input text, version and capacity are hard-coded in `bin/main.cpp` (V3-L, 55 data + 15 EC codewords); there is no command-line interface yet.
+- The input text, version and capacity are hard-coded in `bin/main.cpp` (V3-L, 55 data + 15 EC codewords); there is no command-line interface.
 - The test suite covers the building blocks (bit buffer, encoder, Galois field, Reed-Solomon, format bits and their placement) but not a full encode-and-decode round trip.
 
 ---
