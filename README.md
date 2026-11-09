@@ -20,7 +20,7 @@
 - [Architecture & Design Decisions](#architecture--design-decisions)
 - [Getting Started](#getting-started)
 - [Usage](#usage)
-- [Public API](#public-api)
+- [Core Reference](#core-reference)
 - [Output](#output)
 - [Build Targets](#build-targets)
 - [Configuration](#configuration)
@@ -222,7 +222,9 @@ int main() {
 
 ---
 
-## Public API
+## Core Reference
+
+The building blocks of the core, all declared in `includes/`. They are plain C++ functions and classes you call directly, there is no server or network API.
 
 | Function / class | Header | Description |
 |---|---|---|
